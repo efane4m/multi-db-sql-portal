@@ -1,0 +1,16 @@
+env/.env
+
+server/venv/
+server/__pycache__/
+server/*/__pycache__/
+*.pyc
+server/media/
+server/*/migrations/*.pyc
+
+client/node_modules/
+client/dist/
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
