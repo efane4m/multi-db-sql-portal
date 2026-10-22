@@ -1,0 +1,52 @@
+/* Страница входа. Все селекторы под .login, палитра в theme.css. */
+.login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(320px, 5fr) 6fr;
+  background: var(--paper);
+}
+
+.login-side {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 36px 40px;
+  background: var(--pine-deep); color: #fff;
+}
+.login-brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; }
+.login-lead { position: relative; z-index: 1; max-width: 30ch; }
+.login-lead p { margin: 0 0 12px; font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.login-lead span { color: #b5d3c9; font-size: 15px; }
+/* Крупный знак обрезан краем панели */
+.login-art { position: absolute; right: -150px; bottom: -130px; color: #fff; opacity: 0.07; pointer-events: none; }
+
+.login-main { display: grid; place-items: center; padding: 32px 24px; }
+.login-form { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 18px; }
+.login h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+.login-sub { margin: -10px 0 6px; color: var(--muted); font-size: 14px; }
+
+.login label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.login input {
+  font: inherit; font-size: 16px; color: var(--ink);
+  padding: 8px 2px; border: 0; border-bottom: 2px solid var(--line-strong); border-radius: 0; background: transparent;
+}
+.login input:hover { border-bottom-color: var(--pine); }
+.login input:focus { outline: none; border-bottom-color: var(--pine); background: var(--pine-wash); }
+
+.login-error {
+  padding: 10px 14px; font-size: 14px;
+  border-left: 4px solid var(--brick); background: var(--brick-wash); border-radius: 0 3px 3px 0;
+}
+
+.login button {
+  font: inherit; font-weight: 600; padding: 12px 16px; border: 0; border-radius: 3px;
+  background: var(--pine); color: #fff; cursor: pointer; transition: background 0.12s;
+}
+.login button:hover:not(:disabled) { background: var(--pine-deep); }
+.login button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@media (max-width: 800px) {
+  .login { grid-template-columns: 1fr; }
+  .login-side { padding: 20px 20px 24px; gap: 18px; }
+  .login-lead p { font-size: 22px; }
+  .login-art { display: none; }
+}

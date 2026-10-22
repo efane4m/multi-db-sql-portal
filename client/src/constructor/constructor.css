@@ -1,0 +1,242 @@
+/* Конструктор выборок. Все селекторы под .qc, палитра в theme.css. */
+.qc-body { padding: 28px 24px 40px; max-width: 1280px; margin: 0 auto; }
+
+.qc h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; color: var(--ink); }
+.qc h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.qc-hint { margin: 0 0 14px; font-size: 14px; color: var(--muted); max-width: 60ch; }
+
+/* Поля ввода */
+.qc select, .qc input {
+  font: inherit; color: var(--ink); background: var(--sheet);
+  border: 1px solid var(--line-strong); border-radius: 3px; padding: 7px 10px; min-width: 160px;
+}
+.qc select:hover, .qc input:hover { border-color: var(--pine); }
+
+/* Шапка страницы */
+.qc-header {
+  display: flex; flex-wrap: wrap; gap: 16px 32px;
+  align-items: flex-end; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.qc-pickers { display: flex; flex-wrap: wrap; gap: 16px; }
+.qc-pickers label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+
+/* Шаги: нумерация оправдана, это последовательность */
+.qc-steps { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 20px; border-bottom: 1px solid var(--line-strong); }
+.qc-step {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  padding: 8px 0 10px; margin-bottom: -1px;
+  border: 0; border-bottom: 3px solid transparent; background: none;
+  font: inherit; font-weight: 500; color: var(--muted); cursor: pointer;
+}
+.qc-step:hover:not(:disabled) { color: var(--ink); }
+.qc-step:disabled { opacity: 0.45; cursor: not-allowed; }
+.qc-step-n { font-family: var(--font-mono); font-size: 13px; }
+.qc-step.is-active { color: var(--pine); border-bottom-color: var(--pine); font-weight: 600; }
+.qc-step.is-done { color: var(--ink); }
+
+/* Листы */
+.qc-card { background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 20px 22px; }
+.qc-alert {
+  margin-bottom: 16px; padding: 10px 14px; border-left: 4px solid var(--ochre);
+  background: var(--ochre-wash); color: var(--ink); border-radius: 0 3px 3px 0;
+}
+.qc-alert.is-error { border-left-color: var(--brick); background: var(--brick-wash); }
+
+/* Кнопки */
+.qc-footer { display: flex; justify-content: space-between; margin-top: 20px; }
+.qc-btn {
+  font: inherit; font-weight: 500; padding: 8px 18px; border-radius: 3px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--ink);
+  transition: background 0.12s;
+}
+.qc-btn:hover:not(:disabled) { background: var(--pine-wash); }
+.qc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.qc-btn.is-primary { background: var(--pine); border-color: var(--pine); color: #fff; }
+.qc-btn.is-primary:hover:not(:disabled) { background: var(--pine-deep); }
+.qc-btn.is-small { padding: 3px 10px; font-size: 13px; }
+
+.qc-icon-btn {
+  flex: none; width: 26px; height: 26px; border-radius: 3px; cursor: pointer;
+  border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 18px; line-height: 1;
+}
+.qc-icon-btn:hover { background: var(--pine-wash); color: var(--pine); }
+.qc-icon-btn.is-danger:hover { background: var(--brick-wash); color: var(--brick); }
+
+/* Шаг 1: поля и дерево */
+.qc-builder { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
+
+.qc-field {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 2px; border-bottom: 1px solid var(--line);
+}
+.qc-field.is-overlay {
+  background: var(--sheet); border: 1px solid var(--pine); border-radius: 3px; padding: 7px 10px;
+  box-shadow: 0 4px 14px rgba(10, 63, 53, 0.25); cursor: grabbing;
+}
+.qc-field.is-dragging, .qc-condition.is-dragging, .qc-group.is-dragging { opacity: 0.35; }
+.qc-field-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.qc-handle { cursor: grab; color: var(--line-strong); user-select: none; touch-action: none; letter-spacing: -2px; padding: 0 2px; }
+.qc-handle:hover { color: var(--pine); }
+.qc-handle:active { cursor: grabbing; }
+
+/* Тип поля: только текст, без цветных плашек */
+.qc-kind {
+  flex: none; min-width: 34px; text-align: center;
+  font: 500 11px/1 var(--font-mono); color: var(--muted);
+  border: 1px solid var(--line); border-radius: 3px; padding: 3px 5px;
+}
+
+/* Группа это скобка слева: хвойная для И, охристая для ИЛИ, кирпичная при НЕ */
+.qc-group {
+  --op: var(--pine); --op-wash: var(--pine-wash); --br: var(--op);
+  position: relative; padding: 8px 4px 8px 20px; margin: 4px 0;
+}
+.qc-group.is-or { --op: var(--ochre); --op-wash: var(--ochre-wash); }
+.qc-group.is-not { --br: var(--brick); }
+.qc-group::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  border: 3px solid var(--br); border-right: 0;
+}
+.qc-group.is-root { padding: 0; margin: 0; }
+.qc-group.is-root::before { display: none; }
+.qc-group.is-over { background: var(--op-wash); outline: 2px dashed var(--op); outline-offset: 2px; }
+
+.qc-group-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-bottom: 6px; }
+.qc-spacer { flex: 1; }
+.qc-seg { display: inline-flex; border: 1px solid var(--op); border-radius: 3px; overflow: hidden; }
+.qc-seg button {
+  font: inherit; font-size: 13px; font-weight: 500; padding: 3px 12px; border: 0;
+  background: transparent; color: var(--op); cursor: pointer;
+}
+.qc-seg button.is-on { background: var(--op); color: #fff; }
+.qc-toggle {
+  font: inherit; font-size: 13px; font-weight: 500; padding: 3px 10px; border-radius: 3px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--muted);
+}
+.qc-toggle.is-on { background: var(--brick); border-color: var(--brick); color: #fff; }
+
+.qc-children { display: flex; flex-direction: column; }
+.qc-empty {
+  padding: 18px; text-align: center; color: var(--muted); font-size: 14px;
+  border: 1px dashed var(--line-strong); border-radius: 3px;
+}
+
+/* Условие: строка бланка с полями, подчёркнутыми снизу */
+.qc-condition {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  padding: 8px 4px; border-bottom: 1px solid var(--line);
+}
+.qc-condition.is-empty { box-shadow: inset 3px 0 0 var(--ochre); padding-left: 10px; }
+.qc-condition-field { font-weight: 600; }
+.qc-condition select, .qc-condition input {
+  min-width: 0; padding: 3px 2px; border: 0; border-bottom: 1.5px solid var(--line-strong);
+  border-radius: 0; background: transparent;
+}
+.qc-condition.is-empty input, .qc-condition.is-empty select { border-bottom-color: var(--ochre); }
+.qc-condition input { width: 150px; }
+.qc-condition select:hover, .qc-condition input:hover,
+.qc-condition select:focus, .qc-condition input:focus { border-bottom-color: var(--pine); }
+.qc-condition select:focus-visible, .qc-condition input:focus-visible { background: var(--pine-wash); }
+.qc-and { color: var(--muted); }
+
+/* Шаги 2 и 3 */
+.qc-sql {
+  margin: 0 0 14px; padding: 16px 18px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  background: var(--pine-deep); color: #d6ebe3; border-radius: 3px;
+  font: 14px/1.7 var(--font-mono);
+}
+.qc-sql-tools { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.qc-sql-tools label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.qc-sql-tools input { width: 120px; min-width: 0; }
+
+.qc-result-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.qc-result-bar h2 { margin: 0; }
+.qc-cached { color: var(--pine); font-size: 13px; font-weight: 500; }
+.qc-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 3px; }
+.qc-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.qc-table th {
+  position: sticky; top: 0; text-align: left; white-space: nowrap; cursor: pointer; user-select: none;
+  background: var(--sheet); font-weight: 600; padding: 9px 14px; border-bottom: 2px solid var(--ink);
+}
+.qc-table th:hover { background: var(--pine-wash); }
+.qc-table td { padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.qc-table tbody tr:hover { background: var(--pine-wash); }
+.qc-pager { display: flex; gap: 14px; align-items: center; justify-content: center; margin-top: 14px; color: var(--muted); }
+
+/* Справка и подсказки */
+.qc-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.qc-help-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: inherit; font-weight: 600; font-size: 14px; padding: 6px 14px 6px 8px;
+  border: 1.5px solid var(--pine); border-radius: 999px; background: transparent; color: var(--pine);
+  cursor: pointer; transition: background 0.12s, color 0.12s;
+}
+.qc-help-btn:hover { background: var(--pine-wash); }
+.qc-help-btn.is-on { background: var(--pine); color: #fff; }
+.qc-help-btn.is-on:hover { background: var(--pine-deep); }
+.qc-help-mark {
+  width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--pine); color: #fff; font-size: 14px; font-weight: 700; line-height: 1;
+}
+.qc-help-btn.is-on .qc-help-mark { background: #fff; color: var(--pine); }
+.qc-step-hint { margin: 0 0 16px; color: var(--muted); max-width: 70ch; }
+.qc-help { margin-bottom: 20px; border-left: 4px solid var(--pine); }
+.qc-help-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.qc-help-head h2 { margin: 0; font-size: 18px; }
+.qc-help-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 40px; }
+.qc-help-steps { margin: 0; padding-left: 22px; }
+.qc-help-steps li { margin-bottom: 8px; padding-left: 4px; }
+.qc-help-terms { margin: 0; }
+.qc-help-terms > div { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 10px; margin-bottom: 8px; }
+.qc-help-terms dt { font-weight: 700; color: var(--ink); }
+.qc-help-terms dt.is-and { color: var(--pine); }
+.qc-help-terms dt.is-or { color: var(--ochre); }
+.qc-help-terms dt.is-not { color: var(--brick); }
+.qc-help-terms dd { margin: 0; }
+.qc-help-notes { margin: 8px 0 0; padding: 12px 0 0 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.qc-help-notes li { margin-bottom: 3px; }
+
+/* Отмена, шаблоны, окно параметров, экспорт */
+.qc-alert.is-ok { border-left-color: var(--pine); background: var(--pine-wash); }
+.qc-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+
+.qc-templates { margin-top: 20px; }
+.qc-tpl-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px 16px; align-items: end; margin-bottom: 16px; }
+.qc-tpl-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.qc-tpl-form input { min-width: 0; width: 100%; }
+.qc-tpl-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.qc-tpl-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.qc-tpl-list li {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+  padding: 10px 4px; border-bottom: 1px solid var(--line);
+}
+.qc-tpl-list li.is-active { box-shadow: inset 3px 0 0 var(--pine); padding-left: 12px; background: var(--pine-wash); }
+.qc-tpl-info { display: flex; flex-direction: column; min-width: 0; }
+.qc-tpl-desc { color: var(--ink); font-size: 14px; }
+.qc-tpl-meta { color: var(--muted); font-size: 13px; }
+.qc-tpl-buttons { display: flex; gap: 8px; }
+.qc-btn.is-danger { color: var(--brick); border-color: var(--brick); }
+.qc-btn.is-danger:hover:not(:disabled) { background: var(--brick-wash); }
+
+.qc-modal {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px;
+  background: rgba(10, 63, 53, 0.45);
+}
+.qc-modal-box { width: 100%; max-width: 420px; background: var(--sheet); border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.qc-modal-box h2 { margin: 0; font-size: 18px; }
+.qc-modal-box .qc-hint { margin: 0; }
+.qc-modal-field { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.qc-modal-field input { width: 100%; font-weight: 400; }
+.qc-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .qc-body { padding: 16px 12px 32px; }
+  .qc-builder { grid-template-columns: 1fr; }
+  .qc-help-grid { grid-template-columns: 1fr; }
+  .qc-tpl-form { grid-template-columns: 1fr; }
+  .qc h1 { font-size: 24px; }
+}
+
+.qc-tree h2, .qc-fields h2, .qc-templates h2 { margin-bottom: 12px; }

@@ -1,0 +1,28 @@
+/* Шапка на всю ширину. Все селекторы с префиксом app-. */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 24px;
+  background: var(--pine-deep);
+  color: #fff;
+}
+
+.app-brand {
+  display: inline-flex; align-items: center; gap: 12px;
+  color: #fff; font-weight: 600; font-size: 16px; text-decoration: none;
+}
+
+.app-profile {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1.5px solid rgba(255, 255, 255, 0.55); color: #fff;
+  transition: background 0.15s, color 0.15s;
+}
+.app-profile:hover { background: rgba(255, 255, 255, 0.14); }
+.app-profile.is-active { background: #fff; border-color: #fff; color: var(--pine-deep); }
+
+@media (max-width: 600px) {
+  .app-header { padding: 0 12px; }
+}

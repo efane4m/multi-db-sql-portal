@@ -1,0 +1,42 @@
+/* Общая палитра и основа страниц: вход, профиль, конструктор. Шаблонные стили Vite не трогаем. */
+:root {
+  --paper: #eaefec;      /* фон страницы */
+  --sheet: #fbfcfb;      /* листы и поля */
+  --ink: #16231f;        /* основной текст */
+  --muted: #5c6b65;      /* второстепенный текст */
+  --line: #c5d0ca;       /* тонкие линейки */
+  --line-strong: #8fa198;
+  --pine: #0e5a4b;       /* главный цвет, группа И */
+  --pine-deep: #0a3f35;  /* шапка, тёмные панели */
+  --pine-wash: #dcebe5;
+  --ochre: #94620d;      /* группа ИЛИ */
+  --ochre-wash: #f3e6c8;
+  --brick: #a63a2b;      /* НЕ, ошибки, удаление */
+  --brick-wash: #f6dcd6;
+  --font-ui: 'Golos Text', system-ui, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+
+.qc, .pf, .login, .app-header {
+  color-scheme: light;
+  font: 15px/1.5 var(--font-ui);
+  letter-spacing: 0;
+  text-align: left;
+  color: var(--ink);
+}
+.qc *, .qc *::before, .qc *::after,
+.pf *, .pf *::before, .pf *::after,
+.login *, .login *::before, .login *::after,
+.app-header *, .app-header *::before, .app-header *::after { box-sizing: border-box; }
+
+.qc, .pf { min-height: 100vh; background: var(--paper); }
+
+.qc :focus-visible, .pf :focus-visible, .login :focus-visible, .app-header :focus-visible {
+  outline: 2px solid var(--pine);
+  outline-offset: 2px;
+}
+.app-header :focus-visible { outline-color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .qc *, .pf *, .login *, .app-header * { transition: none !important; animation: none !important; }
+}
