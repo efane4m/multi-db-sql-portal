@@ -21,8 +21,7 @@
 
 .login-main { display: grid; place-items: center; padding: 32px 24px; }
 .login-form { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 18px; }
-.login h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
-.login-sub { margin: -10px 0 6px; color: var(--muted); font-size: 14px; }
+.login-sub { margin: -6px 0 2px; color: var(--muted); font-size: 14px; }
 
 .login label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
 .login input {
@@ -37,12 +36,28 @@
   border-left: 4px solid var(--brick); background: var(--brick-wash); border-radius: 0 3px 3px 0;
 }
 
-.login button {
+.login-submit {
   font: inherit; font-weight: 600; padding: 12px 16px; border: 0; border-radius: 3px;
   background: var(--pine); color: #fff; cursor: pointer; transition: background 0.12s;
 }
-.login button:hover:not(:disabled) { background: var(--pine-deep); }
-.login button:disabled { opacity: 0.45; cursor: not-allowed; }
+.login-submit:hover:not(:disabled) { background: var(--pine-deep); }
+.login-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.login-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--line-strong); }
+.login-tabs button {
+  font: inherit; font-size: 22px; font-weight: 700; padding: 0 0 8px; margin-bottom: -1px;
+  border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); cursor: pointer;
+}
+.login-tabs button:hover { color: var(--ink); }
+.login-tabs button.is-on { color: var(--pine); border-bottom-color: var(--pine); }
+
+.login-demo { padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.login-demo div { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 6px; }
+.login-demo button {
+  font: 13px/1.4 var(--font-mono); padding: 3px 0; border: 0; background: none; color: var(--pine);
+  cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+}
+.login-demo button:hover { color: var(--pine-deep); }
 
 @media (max-width: 800px) {
   .login { grid-template-columns: 1fr; }

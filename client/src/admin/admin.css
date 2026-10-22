@@ -1,0 +1,30 @@
+/* Админка. Использует общие классы конструктора (.qc-*), здесь только своё. */
+.adm-summary { margin: 6px 0 0; }
+.adm-add { align-self: flex-end; }
+.qc .adm-search { min-width: 280px; }
+.adm-card { padding: 0; }
+.adm-card .qc-table-wrap { border: 0; }
+.adm-table td { vertical-align: middle; }
+.adm-login { display: block; font: 12px/1.4 var(--font-mono); color: var(--muted); }
+.adm-none { color: var(--muted); }
+.adm-role {
+  display: inline-block; padding: 1px 8px; border-radius: 3px; font-size: 13px;
+  border: 1px solid var(--line-strong); color: var(--muted);
+}
+.adm-role.is-admin { border-color: var(--pine); color: var(--pine); font-weight: 600; }
+.adm-actions { white-space: nowrap; text-align: right; }
+.adm-actions .qc-btn + .qc-btn { margin-left: 8px; }
+
+.adm-dialog { max-width: 520px; max-height: 92vh; overflow-y: auto; }
+.adm-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.adm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.adm-form input, .adm-form select { width: 100%; min-width: 0; }
+.adm-form input:disabled { background: var(--paper); color: var(--muted); }
+.adm-access { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 3px; }
+.adm-access legend { padding: 0 6px; font-size: 13px; color: var(--muted); }
+.adm-check { display: flex; align-items: center; gap: 8px; padding: 3px 0; cursor: pointer; }
+.adm-check input { min-width: 0; width: 16px; height: 16px; accent-color: var(--pine); }
+
+@media (max-width: 600px) {
+  .adm-form { grid-template-columns: 1fr; }
+}

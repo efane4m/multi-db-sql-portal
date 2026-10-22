@@ -1,70 +1,113 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import AppHeader from './AppHeader';
+import { dbLabel, fetchDatabases, runManualQuery } from './constructor/api';
+import { isMockDb } from './constructor/mock/engine';
+import { MOCK_DATABASES } from './constructor/mock/data';
+import ResultTable, { ExportButtons } from './constructor/ResultTable';
+import './constructor/constructor.css';
+import './Dashboard.css';
+
+const EXAMPLE = {
+  demo_stores: 'SELECT region, COUNT(*) AS stores\nFROM stores\nGROUP BY region\nORDER BY stores DESC;',
+  demo_logistics: 'SELECT status, COUNT(*) AS deliveries\nFROM deliveries\nGROUP BY status;',
+};
 
 export default function Dashboard() {
-  const [dbs, setDbs] = useState([]);
-  const [selectedDb, setSelectedDb] = useState('');
+  const [dbs, setDbs] = useState(null);
+  const [db, setDb] = useState('');
   const [query, setQuery] = useState('SELECT * FROM stores_store;');
-  const [result, setResult] = useState(null);
-  const [isCached, setIsCached] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const authHeader = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
+  const [state, setState] = useState({ status: 'idle', rows: [], cached: false, error: '', version: 0 });
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/databases/', authHeader)
-      .then(res => {
-        setDbs(res.data.databases);
-        if(res.data.databases.length > 0) setSelectedDb(res.data.databases[0]);
-      });
+    fetchDatabases()
+      .then(list => {
+        setDbs(list);
+        if (list.length) {
+          setDb(list[0]);
+          setQuery(EXAMPLE[list[0]] ?? 'SELECT * FROM stores_store;');
+        }
+      })
+      .catch(e => { setDbs([]); setState(s => ({ ...s, status: 'error', error: e.message })); });
   }, []);
 
-  const executeQuery = () => {
-    setLoading(true); setResult(null);
-    axios.post('http://localhost:8000/api/query/', { db_name: selectedDb, query }, authHeader)
-      .then(res => { setResult(res.data.data); setIsCached(res.data.cached); })
-      .catch(err => {
-        // Выводим в консоль браузера ВСЮ ошибку для отладки
-        console.error("Ошибка при запросе:", err); 
-        
-        // Пытаемся достать текст ошибки из ответа сервера
-        const errorMsg = err.response?.data?.error || err.response?.data?.detail || err.message || 'Неизвестная ошибка';
-        alert(`Ошибка: ${errorMsg}`);
-      })
-      .finally(() => setLoading(false));
+  const changeDb = name => {
+    setDb(name);
+    if (EXAMPLE[name]) setQuery(EXAMPLE[name]);
   };
 
-  return (
-    <div style={{ padding: '50px', fontFamily: 'Arial' }}>
-      <h2>Работа с БД</h2>
-      <div>
-        <label>Выберите базу: </label>
-        <select value={selectedDb} onChange={e => setSelectedDb(e.target.value)}>
-          {dbs.map(db => <option key={db} value={db}>{db}</option>)}
-        </select>
-      </div>
-      <h3>SQL Запрос (только SELECT)</h3>
-      <textarea rows="5" cols="80" value={query} onChange={e => setQuery(e.target.value)} style={{ padding: '10px', fontFamily: 'monospace' }}/>
-      <br />
-      <button onClick={executeQuery} disabled={loading} style={{ marginTop: '10px', padding: '5px 15px' }}>
-        {loading ? 'Выполняется...' : 'Выполнить'}
-      </button>
+  const run = () => {
+    setState(s => ({ ...s, status: 'loading' }));
+    runManualQuery(db, query).then(
+      ({ data, cached }) => setState(s => ({ status: 'done', rows: data, cached, error: '', version: s.version + 1 })),
+      e => setState(s => ({ status: 'error', rows: [], cached: false, error: e.message, version: s.version })),
+    );
+  };
 
-      {result && (
-        <div style={{ marginTop: '20px' }}>
-          <h4>Результат {isCached && <span style={{color: 'green', fontSize: '14px'}}>(Взято из кэша Redis)</span>}</h4>
-          <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-              <tr>{result.length > 0 && Object.keys(result[0]).map(k => <th key={k} style={{background: '#f0f0f0'}}>{k}</th>)}</tr>
-            </thead>
-            <tbody>
-              {result.map((row, i) => (
-                <tr key={i}>{Object.values(row).map((v, j) => <td key={j}>{String(v)}</td>)}</tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+  const onKeyDown = e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); if (db && query.trim()) run(); }
+  };
+
+  const { status, rows, cached, error, version } = state;
+  const noAccess = dbs && dbs.length === 0;
+
+  return (
+    <div className="qc">
+      <AppHeader />
+      <div className="qc-body">
+        <header className="qc-header">
+          <div>
+            <h1>Ручной SQL</h1>
+            <p className="qc-hint">Для тех, кто знает SQL. Разрешены только запросы SELECT.</p>
+          </div>
+          <div className="qc-pickers">
+            <label>
+              База
+              <select value={db} onChange={e => changeDb(e.target.value)} disabled={!dbs?.length}>
+                {(dbs || []).map(name => <option key={name} value={name}>{dbLabel(name)}</option>)}
+              </select>
+            </label>
+          </div>
+        </header>
+
+        {noAccess && <div className="qc-alert">Администратор ещё не выдал вам доступ к базам.</div>}
+        {isMockDb(db) && (
+          <div className="qc-alert is-ok">
+            Демо-базы выполняются прямо в браузере на SQLite. Таблицы: {Object.keys(MOCK_DATABASES[db].tables).join(', ')}.
+          </div>
+        )}
+
+        <section className="qc-card">
+          <h2>Запрос</h2>
+          <textarea
+            className="dash-editor"
+            rows={7}
+            spellCheck={false}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={onKeyDown}
+            aria-label="Текст SQL-запроса"
+          />
+          <div className="dash-actions">
+            <button className="qc-btn is-primary" disabled={status === 'loading' || !db || !query.trim()} onClick={run}>
+              {status === 'loading' ? 'Выполняется…' : 'Выполнить'}
+            </button>
+            <span className="qc-hint dash-key">Ctrl+Enter, чтобы выполнить быстро</span>
+          </div>
+        </section>
+
+        {status === 'error' && <div className="qc-alert is-error dash-gap" role="alert">{error}</div>}
+
+        {status === 'done' && (
+          <section className="qc-card dash-gap">
+            <div className="qc-result-bar">
+              <h2>Результат {cached && <span className="qc-cached">(из кэша)</span>}</h2>
+              <span className="qc-spacer" />
+              <ExportButtons rows={rows} fileName="sql-result" />
+            </div>
+            <ResultTable key={version} rows={rows} />
+          </section>
+        )}
+      </div>
     </div>
   );
 }

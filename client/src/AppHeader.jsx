@@ -1,14 +1,24 @@
 import { Link, NavLink } from 'react-router-dom';
 import BracketMark from './BracketMark';
+import { isLocalAdmin } from './auth/session';
 import './AppHeader.css';
+
+const navClass = ({ isActive }) => `app-link${isActive ? ' is-active' : ''}`;
 
 export default function AppHeader() {
   return (
     <header className="app-header">
-      <Link to="/constructor" className="app-brand">
-        <BracketMark />
-        Multi-DB Portal
-      </Link>
+      <div className="app-left">
+        <Link to="/constructor" className="app-brand">
+          <BracketMark />
+          <span className="app-brand-name">Multi-DB Portal</span>
+        </Link>
+        <nav className="app-nav" aria-label="Разделы">
+          <NavLink to="/constructor" className={navClass}>Конструктор</NavLink>
+          <NavLink to="/dashboard" className={navClass}>Ручной SQL</NavLink>
+          {isLocalAdmin() && <NavLink to="/admin" className={navClass}>Админка</NavLink>}
+        </nav>
+      </div>
       <NavLink
         to="/profile"
         title="Профиль"

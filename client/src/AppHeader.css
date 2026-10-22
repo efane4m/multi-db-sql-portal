@@ -9,6 +9,16 @@
   color: #fff;
 }
 
+.app-left { display: flex; align-items: center; gap: 32px; min-width: 0; }
+.app-nav { display: flex; align-items: stretch; gap: 4px; height: 56px; }
+.app-link {
+  display: inline-flex; align-items: center; padding: 0 12px;
+  color: rgba(255, 255, 255, 0.75); text-decoration: none; font-weight: 500; font-size: 15px;
+  border-bottom: 3px solid transparent; transition: color 0.12s;
+}
+.app-link:hover { color: #fff; }
+.app-link.is-active { color: #fff; border-bottom-color: #fff; }
+
 .app-brand {
   display: inline-flex; align-items: center; gap: 12px;
   color: #fff; font-weight: 600; font-size: 16px; text-decoration: none;
@@ -23,6 +33,9 @@
 .app-profile:hover { background: rgba(255, 255, 255, 0.14); }
 .app-profile.is-active { background: #fff; border-color: #fff; color: var(--pine-deep); }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .app-header { padding: 0 12px; }
+  .app-left { gap: 12px; }
+  .app-brand-name { display: none; }
+  .app-link { padding: 0 8px; font-size: 14px; }
 }

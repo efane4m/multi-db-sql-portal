@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { runQuery } from './api';
 import { buildSql } from './sql';
-import { formatCell, paginate, sortRows } from './result';
-import { downloadFile, toCsv, toJson } from './export';
+import ResultTable, { ExportButtons } from './ResultTable';
 
 export default function ResultStep({ db, table, tree, limit }) {
-  const [state, setState] = useState({ status: 'loading', rows: [], cached: false, error: '' });
-  const [sort, setSort] = useState(null);
-  const [page, setPage] = useState(1);
+  const [state, setState] = useState({ status: 'loading', rows: [], cached: false, error: '', version: 0 });
 
   const load = useCallback(stamp => {
     const { sql } = buildSql({ table, tree, limit, refreshStamp: stamp });
@@ -20,30 +17,16 @@ export default function ResultStep({ db, table, tree, limit }) {
   // При входе на шаг сразу выполняем запрос
   useEffect(() => {
     let cancelled = false;
-    load().then(s => { if (!cancelled) setState(s); });
+    load().then(s => { if (!cancelled) setState(prev => ({ ...s, version: prev.version + 1 })); });
     return () => { cancelled = true; };
   }, [load]);
 
   const rerun = stamp => {
     setState(s => ({ ...s, status: 'loading' }));
-    setPage(1);
-    load(stamp).then(setState);
+    load(stamp).then(s => setState(prev => ({ ...s, version: prev.version + 1 })));
   };
 
-  const { status, rows, cached, error } = state;
-  const columns = rows.length ? Object.keys(rows[0]) : [];
-  const sorted = useMemo(
-    () => (sort ? sortRows(rows, sort.column, sort.direction) : rows),
-    [rows, sort],
-  );
-  const view = paginate(sorted, page);
-
-  const toggleSort = column => {
-    setPage(1);
-    setSort(s => (s?.column === column && s.direction === 'asc'
-      ? { column, direction: 'desc' }
-      : { column, direction: 'asc' }));
-  };
+  const { status, rows, cached, error, version } = state;
 
   return (
     <section className="qc-card">
@@ -57,59 +40,12 @@ export default function ResultStep({ db, table, tree, limit }) {
           title="Выполнить заново, не используя кэш">
           Обновить
         </button>
-        <button className="qc-btn" disabled={status !== 'done' || rows.length === 0}
-          onClick={() => downloadFile(`${table}.csv`, toCsv(rows), 'text/csv;charset=utf-8')}
-          title="Скачать все строки результата в формате CSV (открывается в Excel)">
-          Скачать CSV
-        </button>
-        <button className="qc-btn" disabled={status !== 'done' || rows.length === 0}
-          onClick={() => downloadFile(`${table}.json`, toJson(rows), 'application/json')}
-          title="Скачать все строки результата в формате JSON">
-          Скачать JSON
-        </button>
+        <ExportButtons rows={rows} fileName={table} disabled={status !== 'done'} />
       </div>
 
       {status === 'error' && <div className="qc-alert is-error">{error}</div>}
       {status === 'loading' && <p className="qc-hint">Загрузка…</p>}
-
-      {status === 'done' && rows.length === 0 && (
-        <div className="qc-empty">По условиям ничего не найдено</div>
-      )}
-
-      {status === 'done' && rows.length > 0 && (
-        <>
-          <p className="qc-hint">
-            Строк: {rows.length}
-            {rows.length >= limit && ` (достигнут лимит ${limit}, часть строк может быть не показана)`}
-          </p>
-          <div className="qc-table-wrap">
-            <table className="qc-table">
-              <thead>
-                <tr>
-                  {columns.map(c => (
-                    <th key={c} onClick={() => toggleSort(c)}>
-                      {c}
-                      {sort?.column === c && <span className="qc-sort">{sort.direction === 'asc' ? ' ▲' : ' ▼'}</span>}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {view.rows.map((row, i) => (
-                  <tr key={i}>
-                    {columns.map(c => <td key={c}>{formatCell(row[c])}</td>)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="qc-pager">
-            <button className="qc-btn is-small" disabled={view.page <= 1} onClick={() => setPage(view.page - 1)}>Назад</button>
-            <span>Страница {view.page} из {view.pageCount}</span>
-            <button className="qc-btn is-small" disabled={view.page >= view.pageCount} onClick={() => setPage(view.page + 1)}>Вперёд</button>
-          </div>
-        </>
-      )}
+      {status === 'done' && <ResultTable key={version} rows={rows} limit={limit} />}
     </section>
   );
 }

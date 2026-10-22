@@ -1,0 +1,10 @@
+/* Ручной SQL. Использует общие классы конструктора (.qc-*), здесь только своё. */
+.dash-editor {
+  display: block; width: 100%; resize: vertical; margin: 8px 0 12px; padding: 14px 16px;
+  background: var(--pine-deep); color: #d6ebe3; border: 1px solid var(--pine-deep); border-radius: 3px;
+  font: 14px/1.7 var(--font-mono); letter-spacing: 0; tab-size: 2;
+}
+.dash-editor:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+.dash-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.dash-key { margin: 0; }
+.dash-gap { margin-top: 16px; }

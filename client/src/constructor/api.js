@@ -2,6 +2,8 @@ import axios from 'axios';
 import { SCHEMA_SQL, parseSchema } from './schema';
 import { isMockDb, mockDbLabel, mockDbNames, runMockQuery, suggestMock } from './mock/engine';
 import { buildSuggestSql } from './sql';
+import { ensureSeeded, getAccount, publicProfile } from '../auth/accounts';
+import { currentLocalUsername, logout } from '../auth/session';
 
 const API = 'http://localhost:8000/api';
 
@@ -19,8 +21,21 @@ function toError(err) {
   return new Error(data?.error || data?.detail || err.message || 'Неизвестная ошибка');
 }
 
-// Демо-базы живут в браузере и доступны всегда, даже если сервер не отвечает
+function redirectToLogin() {
+  logout();
+  window.location.assign('/login');
+}
+
+// Локальному пользователю доступны демо-базы, которые ему выдал администратор.
+// Пользователю сервера демо-базы доступны всегда, даже если сервер не отвечает.
 export async function fetchDatabases() {
+  const local = currentLocalUsername();
+  if (local) {
+    await ensureSeeded();
+    const account = getAccount(local);
+    if (!account) { redirectToLogin(); return []; }
+    return account.role === 'admin' ? mockDbNames() : account.databases.filter(isMockDb);
+  }
   let real = [];
   try {
     const res = await axios.get(`${API}/databases/`, authHeader());
@@ -51,12 +66,40 @@ export async function fetchSchema(db) {
 
 // Логин нужен, чтобы хранить шаблоны отдельно для каждого пользователя
 export async function fetchUsername() {
+  const local = currentLocalUsername();
+  if (local) return local;
   try {
     const res = await axios.get(`${API}/profile/`, authHeader());
     return res.data.username;
   } catch {
     return 'guest';
   }
+}
+
+// Профиль: данные локальной учётной записи или ответ сервера
+export async function fetchProfile() {
+  const local = currentLocalUsername();
+  if (local) {
+    await ensureSeeded();
+    const account = getAccount(local);
+    if (!account) { redirectToLogin(); throw new Error('Пользователь не найден'); }
+    return { ...publicProfile(account), isLocal: true };
+  }
+  try {
+    const res = await axios.get(`${API}/profile/`, authHeader());
+    return { ...res.data, isLocal: false };
+  } catch (err) {
+    throw toError(err);
+  }
+}
+
+// Ручной SQL: на демо-базах работает SQLite в браузере (подгружается при первом запросе)
+export async function runManualQuery(db, sql) {
+  if (isMockDb(db)) {
+    const { runManualMock } = await import('./mock/sqlite');
+    return runManualMock(db, sql);
+  }
+  return runQuery(db, sql);
 }
 
 // Подсказки не критичны: при любой ошибке просто возвращаем пустой список

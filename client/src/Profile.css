@@ -7,7 +7,7 @@
   border-left: 4px solid var(--brick); background: var(--brick-wash); border-radius: 0 3px 3px 0;
 }
 
-.pf-sheet { max-width: 640px; background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 24px; }
+.pf-sheet { min-width: 0; background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; padding: 24px; }
 
 .pf-top { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
 .pf-avatar { width: 72px; height: 72px; flex: none; border-radius: 4px; object-fit: cover; }
@@ -43,4 +43,23 @@
   .pf-body { padding: 16px 12px 32px; }
   .pf-sheet { padding: 16px; }
   .pf-btn.is-danger { margin-left: 0; }
+}
+
+/* Две колонки: данные слева, редактирование справа */
+.pf-columns { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 420px); gap: 24px; align-items: start; }
+.pf-edit { display: flex; flex-direction: column; gap: 24px; }
+.pf-form { display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--sheet); border: 1px solid var(--line); border-radius: 4px; }
+.pf-form h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.pf-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.pf-form input {
+  font: inherit; font-size: 15px; color: var(--ink); width: 100%; min-width: 0;
+  padding: 7px 10px; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--sheet);
+}
+.pf-form input:hover { border-color: var(--pine); }
+.pf-note { padding: 8px 12px; font-size: 14px; border-left: 4px solid var(--brick); background: var(--brick-wash); border-radius: 0 3px 3px 0; }
+.pf-note.is-ok { border-left-color: var(--pine); background: var(--pine-wash); }
+.pf-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@media (max-width: 1100px) {
+  .pf-columns { grid-template-columns: minmax(0, 1fr); }
 }

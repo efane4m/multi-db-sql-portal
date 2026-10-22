@@ -1,0 +1,91 @@
+<h2>Какой вид у конструктора условий?</h2>
+<p class="subtitle">Один и тот же шаг «Условия» в трёх стилях. Какой приятнее для показа заказчику?</p>
+
+<div class="options">
+  <div class="option" data-choice="a-light" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Светлый и спокойный</h3>
+      <p>Белый фон, мягкие тени, синий акцент. Деловой вид, читается лучше всего.</p>
+      <div style="margin-top:12px;background:#f4f6fb;border-radius:10px;padding:14px;font-family:Arial,sans-serif;font-size:12px;color:#1f2a44">
+        <div style="display:flex;gap:10px">
+          <div style="width:24%;background:#fff;border-radius:8px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+            <b>Поля</b>
+            <div style="margin-top:8px;padding:5px 8px;background:#eef2ff;border-radius:6px">🔤 Наименование</div>
+            <div style="margin-top:5px;padding:5px 8px;background:#eef2ff;border-radius:6px">🔢 Регион</div>
+            <div style="margin-top:5px;padding:5px 8px;background:#eef2ff;border-radius:6px">📅 Дата</div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:8px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+            <span style="background:#3b5bdb;color:#fff;border-radius:12px;padding:2px 10px">И</span>
+            <div style="margin:8px 0 0 14px;border-left:2px solid #c5cff7;padding-left:12px">
+              <div style="padding:6px 10px;border:1px solid #d6dcf5;border-radius:6px;margin-bottom:6px">Регион &nbsp;<b>=</b>&nbsp; 77</div>
+              <div style="padding:6px 10px;border:1px solid #d6dcf5;border-radius:6px;margin-bottom:6px">Дата &nbsp;<b>&gt;=</b>&nbsp; 01.01.2020</div>
+              <span style="background:#f08c00;color:#fff;border-radius:12px;padding:2px 10px">ИЛИ</span>
+              <div style="margin:6px 0 0 14px;border-left:2px solid #ffd8a8;padding-left:12px">
+                <div style="padding:6px 10px;border:1px solid #d6dcf5;border-radius:6px">Наименование &nbsp;<b>LIKE</b>&nbsp; %ООО%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b-dark" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Тёмный, «как в IDE»</h3>
+      <p>Тёмный фон, зелёный и фиолетовый акценты. Выглядит технологично, но строже.</p>
+      <div style="margin-top:12px;background:#14161f;border-radius:10px;padding:14px;font-family:Arial,sans-serif;font-size:12px;color:#d7dbea">
+        <div style="display:flex;gap:10px">
+          <div style="width:24%;background:#1d2030;border-radius:8px;padding:10px">
+            <b>Поля</b>
+            <div style="margin-top:8px;padding:5px 8px;background:#2a2e45;border-radius:6px">Наименование</div>
+            <div style="margin-top:5px;padding:5px 8px;background:#2a2e45;border-radius:6px">Регион</div>
+            <div style="margin-top:5px;padding:5px 8px;background:#2a2e45;border-radius:6px">Дата</div>
+          </div>
+          <div style="flex:1;background:#1d2030;border-radius:8px;padding:12px">
+            <span style="background:#7950f2;color:#fff;border-radius:12px;padding:2px 10px">И</span>
+            <div style="margin:8px 0 0 14px;border-left:2px solid #3b3f63;padding-left:12px">
+              <div style="padding:6px 10px;border:1px solid #3b3f63;border-radius:6px;margin-bottom:6px">Регион <b style="color:#69db7c">=</b> 77</div>
+              <div style="padding:6px 10px;border:1px solid #3b3f63;border-radius:6px;margin-bottom:6px">Дата <b style="color:#69db7c">&gt;=</b> 01.01.2020</div>
+              <span style="background:#2f9e44;color:#fff;border-radius:12px;padding:2px 10px">ИЛИ</span>
+              <div style="margin:6px 0 0 14px;border-left:2px solid #2b6b3b;padding-left:12px">
+                <div style="padding:6px 10px;border:1px solid #3b3f63;border-radius:6px">Наименование <b style="color:#69db7c">LIKE</b> %ООО%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c-soft" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Мягкий и цветной</h3>
+      <p>Крупные скруглённые карточки, каждое условие своего цвета по типу поля. Дружелюбнее, быстрее читается тип данных.</p>
+      <div style="margin-top:12px;background:#fdf8f3;border-radius:14px;padding:14px;font-family:Arial,sans-serif;font-size:12px;color:#3d2c1e">
+        <div style="display:flex;gap:10px">
+          <div style="width:24%;background:#fff;border-radius:14px;padding:10px">
+            <b>Поля</b>
+            <div style="margin-top:8px;padding:6px 10px;background:#ffe3e3;border-radius:14px">Наименование</div>
+            <div style="margin-top:5px;padding:6px 10px;background:#d3f9d8;border-radius:14px">Регион</div>
+            <div style="margin-top:5px;padding:6px 10px;background:#d0ebff;border-radius:14px">Дата</div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:14px;padding:12px">
+            <span style="background:#e8590c;color:#fff;border-radius:14px;padding:3px 12px">И</span>
+            <div style="margin:8px 0 0 14px;padding-left:12px;border-left:3px dotted #ffc9a0">
+              <div style="padding:7px 12px;background:#d3f9d8;border-radius:14px;margin-bottom:6px">Регион = 77</div>
+              <div style="padding:7px 12px;background:#d0ebff;border-radius:14px;margin-bottom:6px">Дата &gt;= 01.01.2020</div>
+              <span style="background:#ae3ec9;color:#fff;border-radius:14px;padding:3px 12px">ИЛИ</span>
+              <div style="margin:6px 0 0 14px;padding-left:12px;border-left:3px dotted #e5b8f0">
+                <div style="padding:7px 12px;background:#ffe3e3;border-radius:14px">Наименование LIKE %ООО%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
