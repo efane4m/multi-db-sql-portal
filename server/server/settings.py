@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import json
+from copy import deepcopy
+from core.reader_credentials import reader_password
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -104,6 +107,47 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = ['core.routers.DatabaseRouter']
+
+# Only these logical names are accepted by the query API. Never expose default.
+QUERY_DATABASES = {
+    'db_stores': {'label': 'Магазины', 'schemas': ['public']},
+    'db_logistics': {'label': 'Логистика', 'schemas': ['public']},
+}
+QUERY_DATABASES.update(json.loads(os.getenv('QUERY_DATABASES_JSON') or '{}'))
+for logical_name, config in QUERY_DATABASES.items():
+    if logical_name == 'default' or logical_name.startswith('query_'):
+        raise ValueError('Reserved query database name')
+    if logical_name not in DATABASES:
+        DATABASES[logical_name] = {
+            **deepcopy(DATABASES['default']),
+            'NAME': config.get('name', logical_name),
+            'HOST': config.get('host', os.getenv('DB_HOST')),
+            'PORT': config.get('port', os.getenv('DB_PORT')),
+        }
+    reader_alias = f'query_{logical_name}'
+    config['read_alias'] = reader_alias
+    DATABASES[reader_alias] = {
+        **deepcopy(DATABASES[logical_name]),
+        'USER': os.getenv('DB_QUERY_USER', 'portal_reader'),
+        'PASSWORD': reader_password(),
+        'OPTIONS': {'options': '-c default_transaction_read_only=on'},
+        'TEST': {'MIRROR': logical_name},
+    }
+
+QUERY_TIMEOUT_MS = int(os.getenv('QUERY_TIMEOUT_MS', '5000'))
+QUERY_LOCK_TIMEOUT_MS = int(os.getenv('QUERY_LOCK_TIMEOUT_MS', '1000'))
+QUERY_MAX_ROWS = int(os.getenv('QUERY_MAX_ROWS', '10000'))
+QUERY_MAX_BYTES = int(os.getenv('QUERY_MAX_BYTES', '5000000'))
+QUERY_MAX_SQL_LENGTH = 50000
+QUERY_CACHE_TTL = 300
+QUERY_SCHEMA_CACHE_TTL = 30
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {'console': {'class': 'logging.StreamHandler'}},
+    'loggers': {'portal.queries': {'handlers': ['console'], 'level': 'INFO', 'propagate': False}},
+}
 
 CACHES = {
     'default': {

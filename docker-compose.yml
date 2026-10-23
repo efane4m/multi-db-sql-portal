@@ -36,6 +36,9 @@ services:
       DB_HOST: db
       DB_PORT: "5432"
       REDIS_URL: redis://redis:6379/1
+      DB_QUERY_USER: portal_reader
+      DB_QUERY_PASSWORD: ${DB_QUERY_PASSWORD:-}
+      QUERY_DATABASES_JSON: ${QUERY_DATABASES_JSON:-}
     ports:
       - "8000:8000"
     depends_on:

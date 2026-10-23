@@ -1,0 +1,55 @@
+{
+  "database": "db_analytics",
+  "repeats": 2,
+  "workers": 1,
+  "max_rows": 10000,
+  "max_bytes": 5000000,
+  "cache_backend": "django.core.cache.backends.locmem.LocMemCache",
+  "queries": {
+    "count": {
+      "uncached_min_ms": 61.07,
+      "uncached_median_ms": 64.55,
+      "uncached_max_ms": 68.03,
+      "cached_request_ms": 24.61,
+      "cache_hit": true,
+      "row_count": 1,
+      "truncated": false,
+      "under_target": true
+    },
+    "indexed_filter": {
+      "uncached_min_ms": 55.25,
+      "uncached_median_ms": 108.47,
+      "uncached_max_ms": 161.68,
+      "cached_request_ms": 27.5,
+      "cache_hit": true,
+      "row_count": 1,
+      "truncated": false,
+      "under_target": true
+    },
+    "join": {
+      "uncached_min_ms": 59.04,
+      "uncached_median_ms": 59.1,
+      "uncached_max_ms": 59.16,
+      "cached_request_ms": 28.52,
+      "cache_hit": true,
+      "row_count": 4,
+      "truncated": false,
+      "under_target": true
+    },
+    "large_result": {
+      "uncached_min_ms": 61.37,
+      "uncached_median_ms": 68.71,
+      "uncached_max_ms": 76.06,
+      "cached_request_ms": 30.53,
+      "cache_hit": true,
+      "row_count": 1000,
+      "truncated": false,
+      "under_target": true
+    }
+  },
+  "metadata_api_ms": {
+    "schema": 26.91,
+    "preview": 30.35,
+    "suggestions": 3.1
+  }
+}

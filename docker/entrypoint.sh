@@ -12,4 +12,7 @@ from stores.models import Store
 sys.exit(0 if Store.objects.using('db_stores').exists() else 1)
 " || python manage.py seed_data
 
+# File permissions are 0600; docker compose exec commands read the same secret.
+python manage.py configure_query_reader --generate-password-file
+
 exec "$@"

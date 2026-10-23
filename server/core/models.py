@@ -13,7 +13,13 @@ class User(AbstractUser):
 class DatabaseAccess(models.Model):
     DB_CHOICES = (('db_stores', 'Магазины'), ('db_logistics', 'Логистика'))
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='db_accesses')
-    db_name = models.CharField(max_length=50, choices=DB_CHOICES)
+    db_name = models.CharField(max_length=50)
+
+    def clean(self):
+        from django.conf import settings
+        from django.core.exceptions import ValidationError
+        if self.db_name not in settings.QUERY_DATABASES:
+            raise ValidationError({'db_name': 'База не зарегистрирована в QUERY_DATABASES.'})
 
     class Meta:
         unique_together = ('user', 'db_name')

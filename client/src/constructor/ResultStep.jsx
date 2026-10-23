@@ -8,7 +8,7 @@ export default function ResultStep({ db, table, tree, limit }) {
 
   const load = useCallback(stamp => {
     const { sql } = buildSql({ table, tree, limit, refreshStamp: stamp });
-    return runQuery(db, sql).then(
+    return runQuery(db, sql, { refresh: typeof stamp === 'number' }).then(
       ({ data, cached }) => ({ status: 'done', rows: data, cached, error: '' }),
       e => ({ status: 'error', rows: [], cached: false, error: e.message }),
     );

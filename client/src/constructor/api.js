@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { SCHEMA_SQL, parseSchema } from './schema';
 import { isMockDb, mockDbLabel, mockDbNames, runMockQuery, suggestMock } from './mock/engine';
-import { buildSuggestSql } from './sql';
 import { ensureSeeded, getAccount, publicProfile } from '../auth/accounts';
 import { currentLocalUsername, logout } from '../auth/session';
 
@@ -49,10 +48,10 @@ export async function fetchDatabases() {
 
 export const dbLabel = name => mockDbLabel(name);
 
-export async function runQuery(db, sql) {
+export async function runQuery(db, sql, { refresh = false } = {}) {
   if (isMockDb(db)) return runMockQuery(db, sql);
   try {
-    const res = await axios.post(`${API}/query/`, { db_name: db, query: sql }, authHeader());
+    const res = await axios.post(`${API}/query/`, { db_name: db, query: sql, refresh }, authHeader());
     return { data: res.data.data, cached: res.data.cached };
   } catch (err) {
     throw toError(err);
@@ -60,8 +59,19 @@ export async function runQuery(db, sql) {
 }
 
 export async function fetchSchema(db) {
-  const { data } = await runQuery(db, SCHEMA_SQL);
-  return parseSchema(data);
+  if (isMockDb(db)) {
+    const { data } = await runQuery(db, SCHEMA_SQL);
+    return parseSchema(data);
+  }
+  try {
+    const res = await axios.get(`${API}/databases/${encodeURIComponent(db)}/schema/`, authHeader());
+    return Object.fromEntries(res.data.tables.map(table => [
+      table.schema === 'public' ? table.name : `${table.schema}.${table.name}`,
+      table.columns.map(column => ({ name: column.name, kind: column.kind })),
+    ]));
+  } catch (err) {
+    throw toError(err);
+  }
 }
 
 // Логин нужен, чтобы хранить шаблоны отдельно для каждого пользователя
@@ -106,8 +116,9 @@ export async function runManualQuery(db, sql) {
 export async function fetchSuggestions(db, table, field, prefix) {
   try {
     if (isMockDb(db)) return suggestMock(db, table, field, prefix);
-    const { data } = await runQuery(db, buildSuggestSql(table, field, prefix));
-    return data.map(row => String(Object.values(row)[0]));
+    const res = await axios.get(`${API}/databases/${encodeURIComponent(db)}/tables/${encodeURIComponent(table)}/suggestions/`,
+      { ...authHeader(), params: { field, prefix } });
+    return res.data.values;
   } catch {
     return [];
   }

@@ -16,3 +16,5 @@ client/dist/
 Thumbs.db
 .superpowers/
 .playwright-mcp/
+.local-postgres/
+performance-results*.json

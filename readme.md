@@ -1,5 +1,12 @@
 # Multi-DB SQL Portal
 
+Обновление backend: безопасное выполнение SQL, metadata/preview API, отдельная
+роль чтения, тесты и бенчмарки описаны в [docs/BACKEND.md](docs/BACKEND.md).
+Фактически выполненные проверки: [docs/BACKEND-VALIDATION.md](docs/BACKEND-VALIDATION.md).
+Отчёт о backend-изменениях: [docs/BACKEND-CHANGES.md](docs/BACKEND-CHANGES.md).
+Контекст для backend- и frontend-разработчиков, API и следующие задачи — в технической документации выше.
+Локальная демо-регистрация клиента и серверные Django-пользователи — разные контуры.
+
 Прототип веб-приложения для выполнения SQL-запросов к нескольким базам данных с разграничением прав доступа, ролями (Администратор / Пользователь) и кэшированием результатов.
 
 ## Технологический стек
@@ -104,8 +111,8 @@ docker compose exec server python manage.py createsuperuser
 
 ### Предварительные требования
 
-1. **Python** 3.10 или выше.
-2. **Node.js** 18 или выше.
+1. **Python** 3.12 или выше.
+2. **Node.js** 20.19+ или 22.12+.
 3. **PostgreSQL** (сервер должен быть запущен, желательно с pgAdmin). При установке запомните пароль пользователя `postgres`.
 4. **Redis**. Для Windows рекомендуется [Memurai](https://www.memurai.com/): он работает как служба и слушает порт 6379.
 5. **Git**.
@@ -169,6 +176,13 @@ pip install -r requirements.txt
 python manage.py migrate --database=default
 python manage.py migrate --database=db_stores
 python manage.py migrate --database=db_logistics
+```
+
+Для SQL API настройте отдельные `DB_QUERY_USER` и `DB_QUERY_PASSWORD` (от 16
+символов) в `env/.env`, затем после миграций/создания предметных таблиц выполните:
+
+```bash
+python manage.py configure_query_reader
 ```
 
 ### Шаг 5. Тестовые данные
@@ -258,7 +272,7 @@ npm install
 
 **Общие**
 
-* **Ошибка 500 при выполнении запроса.** Проверьте, что Redis запущен. Если кэш недоступен, сервер выдаёт ошибку. В Docker проверьте `docker compose ps`, у `redis` должен быть статус `healthy`.
+* **Не появляется cache hit.** Проверьте Redis: `docker compose ps`, у `redis` должен быть статус `healthy`. При отказе Redis запросы продолжают выполняться без кеша.
 * **Ошибка «relation does not exist».** Не выполнены миграции для второстепенных баз. Повторьте три команды `migrate --database=...` (в Docker: `docker compose exec server python manage.py migrate --database=db_stores`, то же для `db_logistics`).
 * **Не работает авторизация или после входа возвращает на страницу логина.** Очистите `localStorage` (F12 → Application → Local Storage) и войдите заново, чтобы получить свежий JWT-токен.
 * **После входа нет баз в списке «Работа с БД».** Пользователю не выданы доступы. Добавьте их в админке в блоке **Database accesses**.
