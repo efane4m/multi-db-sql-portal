@@ -154,6 +154,11 @@
 .qc-result-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
 .qc-result-bar h2 { margin: 0; }
 .qc-cached { color: var(--pine); font-size: 13px; font-weight: 500; }
+.qc-result-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 16px 0 8px; }
+.qc-result-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.qc-result-search { flex: 1; min-width: 200px; }
+.qc-result-controls input, .qc-result-controls select { width: 100%; min-width: 0; }
+.qc-result-size { min-width: 140px; }
 .qc-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 3px; }
 .qc-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
 .qc-table th {
@@ -163,7 +168,8 @@
 .qc-table th:hover { background: var(--pine-wash); }
 .qc-table td { padding: 8px 14px; border-bottom: 1px solid var(--line); }
 .qc-table tbody tr:hover { background: var(--pine-wash); }
-.qc-pager { display: flex; gap: 14px; align-items: center; justify-content: center; margin-top: 14px; color: var(--muted); }
+.qc-pager { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; margin-top: 14px; color: var(--muted); }
+.qc-page-range { margin-right: auto; font-size: 13px; }
 
 /* Справка и подсказки */
 .qc-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
@@ -237,6 +243,11 @@
   .qc-help-grid { grid-template-columns: 1fr; }
   .qc-tpl-form { grid-template-columns: 1fr; }
   .qc h1 { font-size: 24px; }
+}
+
+@media (max-width: 600px) {
+  .qc-result-search { flex-basis: 100%; min-width: 0; }
+  .qc-page-range { flex-basis: 100%; margin-right: 0; text-align: center; }
 }
 
 .qc-tree h2, .qc-fields h2, .qc-templates h2 { margin-bottom: 12px; }

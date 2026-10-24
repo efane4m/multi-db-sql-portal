@@ -6,6 +6,15 @@ export function formatCell(value) {
   return value === null || value === undefined ? EMPTY : String(value);
 }
 
+// Поиск по тому же тексту, который пользователь видит в ячейках таблицы.
+export function filterRows(rows, query) {
+  const needle = query.trim().toLocaleLowerCase('ru');
+  if (!needle) return rows;
+  return rows.filter(row => Object.values(row).some(value =>
+    formatCell(value).toLocaleLowerCase('ru').includes(needle),
+  ));
+}
+
 // Бэкенд может отдавать decimal строкой, поэтому числовые строки тоже считаются числами
 function asNumber(value) {
   if (typeof value === 'number') return value;
